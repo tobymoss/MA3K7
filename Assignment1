@@ -1,0 +1,38 @@
+def bracelet(a,b,n):     # I will define a function to work out the sequence for me where the arguments are the starting numbers and the number of terms to calculate
+    s=[]               # The 'bracelet' will start as an empty array
+    s.append(a)        # The starting numbers are added to the bracelet
+    s.append(b)
+    for i in range(n-2):   # I will calculate the first n terms of the sequence (including the starting numbers)
+        s.append((s[-2] + s[-1]) % 10)     # The last and second-last items in the array are summed and added to the array (also I must remember to include mod 10)
+    return(s)      # The function returns the first n terms of the sequence
+
+
+print(bracelet(1,5,10))     # testing the function and comparing it to the calculations I've done by hand. It seems to work.
+
+
+print(bracelet(1,5,20))     # I will add 10 terms at a time and look for any repetition
+
+
+print(bracelet(1,5,60))      # The sequnce finally repeats after calculating 20, 30, 40, 50, 60 and 70 terms. The full sequence is given below:
+
+
+print(bracelet(2,0,20))     # The (2,0) sequnce repeats after calculating 10, 20, 30 terms. The full sequence is given below:
+
+
+print(bracelet(1,3,12))    # After testing 10 and 20 terms, this bracelet has 12 terms:
+
+
+s=[0,0,0,0,0,0,0,0,0,0]         # This code will count the digits in the starting pairs in the bracelets I've already found
+for j in range(10):             
+    for i in range(60): 
+        if bracelet(1,5,60)[i]==j:
+            s[j]+=1
+    for i in range(20):
+        if bracelet(2,0,20)[i]==j:
+            s[j]+=1
+    for i in range(12):
+        if bracelet(1,3,12)[i]==j:
+            s[j]+=1
+s[0]+=3
+s[5]+=2
+print(s)             # The digits which occur the least will be in the remaining bracelet
