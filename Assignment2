@@ -1,0 +1,241 @@
+import numpy as np
+import scipy.linalg as LA
+import random as rn
+import matplotlib.pyplot as plt
+import math
+import time
+from sympy.utilities.iterables import multiset_permutations as permute
+from fractions import Fraction
+
+
+
+
+
+
+# This code calculates the exact values of P_0 and P_1 for n = 3
+# If I start first (there are 5 zeros and 4 ones)
+d=[]
+for a in permute((0,0,0,0,0,1,1,1,1)): # this tool works out all of the permutations of the numbers without repetition
+    m = np.array(a).reshape(3,3)      # all of the perumations are reshaped into matrices whoise determinants are added to an array
+    d.append(LA.det(m))
+
+
+k=0                     # This counts all of the determinants of value 0
+for i in range(len(d)):
+    if d[i]==0:
+        k+=1
+        
+
+print("When I start,",k, "games out of", len(d), "are winnable. So P_1 =",Fraction(k,len(d)))   # This gives the exact proportion of winnable games for n = 3 when I start
+
+
+# If my friend starts first (there are 4 zeros and 5 ones)
+d=[]
+for a in permute((0,0,0,0,1,1,1,1,1)): # this tool works out all of the permutations of the numbers without repetition
+    m = np.array(a).reshape(3,3)      # all of the perumations are reshaped into matrices whoise determinants are added to an array
+    d.append(LA.det(m))
+
+
+k=0                     # This counts all of the determinants of value 0
+for i in range(len(d)):
+    if d[i]==0:
+        k+=1
+        
+print("When my friend starts,",k, "games out of", len(d), "are winnable. So P_1 =",Fraction(k,len(d)))   # This gives the exact proportion of winnable games for n = 3 when my friend starts
+
+
+
+
+
+
+
+# This code calculates the exact values of P_0 and P_1 for any n
+start_time = time.time()
+
+n = 4
+
+# If I start first (there are more zeros than ones by 1)
+d=[]
+x = math.ceil((n**2)/2)  # x gives the number of zeros
+y = math.floor((n**2)/2)  # y gives the number of ones
+
+s=[]
+for i in range(x):
+    s.append(0)
+for i in range(y):
+    s.append(1)
+    
+for a in permute(s): # this tool works out all of the permutations of the numbers without repetition
+    m = np.array(a).reshape(n,n)      # all of the perumations are reshaped into matrices whoise determinants are added to an array
+    d.append(LA.det(m))
+
+
+k=0                     # This counts all of the determinants of value 0
+for i in range(len(d)):
+    if d[i]==0:
+        k+=1
+        
+
+print("When I start,",k, "games out of", len(d), "are winnable. So P_0 =",Fraction(k,len(d)))   # This gives the exact proportion of winnable games for n = 3 when I start
+
+
+# If my friend starts first (there are more ones than zeros by 1)
+d=[]
+x = math.floor((n**2)/2)
+y = math.ceil((n**2)/2)
+
+s=[]
+for i in range(x):
+    s.append(0)
+for i in range(y):
+    s.append(1)
+    
+for a in permute(s): # this tool works out all of the permutations of the numbers without repetition
+    m = np.array(a).reshape(n,n)      # all of the perumations are reshaped into matrices whoise determinants are added to an array
+    d.append(LA.det(m))
+
+
+k=0                     # This counts all of the determinants of value 0
+for i in range(len(d)):
+    if d[i]==0:
+        k+=1
+        
+
+print("When my friend starts,",k, "games out of", len(d), "are winnable. So P_1 =",Fraction(k,len(d)))   # This gives the exact proportion of winnable games for n = 3 when I start
+print("--- %s seconds ---" % (time.time() - start_time))
+
+
+
+
+
+
+
+
+
+# This code samples n x n matrices to estimate P_0 and P_1
+# the marix generation works differently here but the remaining code is the same
+start_time = time.time()
+
+# If I start
+n = 20
+
+samples = 10000
+x = math.ceil((n**2)/2)
+y = math.floor((n**2)/2)
+
+d=[]
+for i in range(samples):
+    a=np.zeros(n**2)
+    s = rn.sample(range(n**2), n**2)    # These few lines work by assigning each one or zero a random (unique) position in the matrix
+    for j in range(x):
+        a[s[j]]=0
+    for j in range(y):
+        a[s[j+x]]=1
+    m = np.array(a).reshape(n,n)    
+    d.append(LA.det(m))
+k=0                     
+for i in range(len(d)):
+    if d[i]==0:
+        k+=1
+print("If I start, approximately",k/len(d),"of the games are winnable.")
+
+
+# If my friend starts 
+
+x = math.floor((n**2)/2)
+y = math.ceil((n**2)/2)
+
+d=[]
+for i in range(samples):
+    a=np.zeros(n**2)
+    s = rn.sample(range(n**2), n**2)
+    for j in range(x):
+        a[s[j]]=0
+    for j in range(y):
+        a[s[j+x]]=1
+    m = np.array(a).reshape(n,n)      # all of the perumations are reshaped into matrices whoise determinants are added to an array
+    d.append(LA.det(m))
+k=0                     # This counts all of the determinants of value 0
+for i in range(len(d)):
+    if d[i]==0:
+        k+=1
+print("If my friend starts, approximately",k/len(d),"of the games are winnable.")
+print("--- %s seconds ---" % (time.time() - start_time))
+
+
+
+
+
+
+
+
+
+
+# This code estimates the values of P_0 and P_1 for n = 1,...,20 and then plots them in a graph
+# It takes roughly 45 seconds to run on my machine
+
+
+start_time = time.time()
+v=[]
+w=[]
+z=[]
+for q in range(20):
+    # If I start
+    n = q+1
+    v.append(n)
+
+    samples = 10000
+    x = math.ceil((n**2)/2)
+    y = math.floor((n**2)/2)
+
+    d=[]
+    for i in range(samples):
+        a=np.zeros(n**2)
+        s = rn.sample(range(n**2), n**2)
+        for j in range(x):
+            a[s[j]]=0
+        for j in range(y):
+            a[s[j+x]]=1
+        m = np.array(a).reshape(n,n)    
+        d.append(LA.det(m))
+    k=0                     
+    for i in range(len(d)):
+        if d[i]==0:
+            k+=1
+    
+    w.append(k/len(d))
+
+
+    # If my friend starts 
+
+    x = math.floor((n**2)/2)
+    y = math.ceil((n**2)/2)
+
+    d=[]
+    for i in range(samples):
+        a=np.zeros(n**2)
+        s = rn.sample(range(n**2), n**2)
+        for j in range(x):
+            a[s[j]]=0
+        for j in range(y):
+            a[s[j+x]]=1
+        m = np.array(a).reshape(n,n)      # all of the perumations are reshaped into matrices whoise determinants are added to an array
+        d.append(LA.det(m))
+    k=0                     # This counts all of the determinants of value 0
+    for i in range(len(d)):
+        if d[i]==0:
+            k+=1
+    
+    z.append(k/len(d))
+    
+plt.plot(v,w,color='cornflowerblue',marker='o',label='P_0')
+plt.plot(v,z,color='indianred',marker='o', label='P_1')
+plt.xlabel('n')
+plt.grid()
+plt.legend()
+plt.xlim(1,20)
+plt.ylim(0,1)
+plt.xticks(v,np.arange(1,21))
+plt.show()
+
+print("--- %s seconds ---" % (time.time() - start_time))
