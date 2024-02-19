@@ -65,7 +65,7 @@ for i in range(100000):
 %matplotlib qt
 plt.hist(a,50)                   # I initially plotted a histogram with 50 bars (figure 1)
 plt.show()
-plt.hist(a,max(a)+1)              # I then plotted a histogram with one bar per number, essentially a bar chart
+plt.hist(a,max(a)+1)              # I then plotted a histogram with one bar per number, essentially a bar chart (figure 2)
 plt.show()
 
 
@@ -86,7 +86,7 @@ print(set(a))           # this gives all of the distinct values in the sample
 
 
 
-%matplotlib qt                            # this code plots the distinct winning numbers from the n-number games for n<21
+%matplotlib qt                            # this code plots the distinct winning numbers from the n-number games for n<21  (figure 3)
 k=19
 for i in range(k+1):
   b=[]
