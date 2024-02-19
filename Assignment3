@@ -1,0 +1,111 @@
+import numpy as np
+import random as rn
+import matplotlib.pyplot as plt
+import statistics as stats
+import pandas as pd
+
+
+
+
+
+
+
+
+hat = [*range(1,2025,1)]                   # this gives the 'hat' with all the numbers in, in list form
+while len(hat) > 1:                         # this loop continues until one number is left
+    i = rn.randint(0,len(hat)-1)             # I randomly choose the pre-numbers from the list
+    j = rn.randint(0,len(hat)-1)
+    while i == j:
+        j = rn.randint(0,len(hat)-1)         # this is in case I choose the same number twice from the list
+    M = np.absolute(hat[i]-hat[j])           # this gives the metric of the pre-numbers
+    if i < j:                               # this removes the original numbers from the list 
+        hat.pop(j)                           # the number with the highest index is removed first
+        hat.pop(i)
+    else:
+        hat.pop(i)
+        hat.pop(j)
+    hat.append(M)                             # the metric is added to the hat
+print(hat)
+
+
+
+
+
+
+
+
+                                          # this code does the same thing as the code above but it is now a function
+def hatnum(n):                            # the function takes n is an argument
+    hat = [*range(1,n+1,1)]       
+    while len(hat) > 1:           
+        i = rn.randint(0,len(hat)-1)
+        j = rn.randint(0,len(hat)-1)
+        while i == j:
+            j = rn.randint(0,len(hat)-1)
+        M = np.absolute(hat[i]-hat[j])
+        if i < j:
+            hat.pop(j)
+            hat.pop(i)
+        else:
+            hat.pop(i)
+            hat.pop(j)
+        hat.append(M)
+    return(hat[0])                      # the function returns the winnning number of an n-number game
+
+
+
+
+
+
+
+
+a=[]                               # this array is the sample of 100000 winning numbers from the 2024-number game
+for i in range(100000):
+    a.append(hatnum(2024))       # it took 12 minutes to run on my machine
+%matplotlib qt
+plt.hist(a,50)                   # I initially plotted a histogram with 50 bars (figure 1)
+plt.show()
+plt.hist(a,max(a)+1)              # I then plotted a histogram with one bar per number, essentially a bar chart
+plt.show()
+
+
+
+
+
+
+
+print(pd.Index(a).value_counts())      # this lists the values in the sample from most to least frequent
+
+
+
+
+print(set(a))           # this gives all of the distinct values in the sample
+
+
+
+
+
+
+%matplotlib qt                            # this code plots the distinct winning numbers from the n-number games for n<21
+k=19
+for i in range(k+1):
+  b=[]
+  for j in range(5000):                 # the winning numbers are from a sample which is unlikely to miss any out
+    b.append(hatnum(i+1))
+  x=[]
+  for l in range(len(set(b))):
+    x.append(i+1)                        # the x coordinates are the number of pieces of paper that start in the hat
+  y=[]  
+  for h in range(len(set(b))):
+    y.append(list(set(b))[h])           # the y coordinates are the possibles winning numbers
+  plt.scatter(x,y,color='#1f77b4')
+plt.grid()
+plt.show()
+
+
+
+
+
+
+
+
