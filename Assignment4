@@ -1,0 +1,145 @@
+import matplotlib.pyplot as plt
+import numpy as np
+import sympy as sp
+
+
+
+
+
+
+
+# This is my code to create Pascal's Triangle from Lab 2. I've adapted it here so that all values relevant to my calcualtions appear in blue. (Figure 2)
+n = 25
+space=' '
+
+def binom(n,k):
+    if k<0:
+        return(0)
+    else:
+        a = 1
+        for i in range(k):
+            a = a*(n-i)//(i+1)        
+        return a
+
+for i in range(n+1):
+    for j in range(0, n-i+1):
+        print(5*space, end='') 
+    for j in range(i+1):
+        u = binom(i,j)
+        if i+j==24:
+            print('{:^15}'.format('\033[34m'+str(u)), sep='', end='')
+        elif 0.5*j+12==i:
+            print('{:^15}'.format('\033[34m'+str(u)), sep='', end='')
+        else:
+            print('{:^15}'.format('\033[39m'+str(u)), sep='', end='') 
+    print('')
+
+
+
+
+
+
+
+# This code calculates P(25). The for-loop is used to follow the pattern given by the values in Figure 1.
+s=0
+for i in range(13):
+    s += binom(i+12,2*i) / 2**(i+12)
+print(s)
+
+
+
+
+
+
+
+
+# This code breaks splits P(25) into each toss of the coin and plots the values (Figure 3)
+%matplotlib qt 
+x=[]
+y=[]
+for j in range(13):
+    x.append(j+12)
+    y.append( binom(j+12,2*j) / 2**(j+12) )
+plt.scatter(x,y,color='cornflowerblue',marker='o')
+plt.xlabel('i')
+plt.ylabel('n_i/2^i')
+plt.grid()
+plt.show()
+
+
+
+
+
+
+
+
+
+# This code calculates P(n) for any n. I did this by generalising the pattern that appears in Figure 1 for all n.
+n=4
+s=0
+for i in range(n):
+    s += binom(i,2*i-n+1) / 2**(i)
+print(s)
+
+
+
+
+
+
+
+
+
+
+# This code plots P(n) for n from 1 to 30 using the code above (Figure 4)
+%matplotlib qt 
+n=30
+x=[]
+y=[]
+for j in range(n):
+    s=0
+    for i in range(j):
+        s += binom(i,2*i-j+1) / 2**(i)
+    x.append(j)
+    y.append(s)
+plt.plot(x,y,color='cornflowerblue',marker='o')
+plt.xlabel('n')
+plt.ylabel('P(n)')
+plt.grid()
+plt.show()
+
+
+
+
+
+
+
+
+# This is code from Lab 7 used to plot recurrence relations (Figure 5)
+A=np.array([0,1])
+for i in np.arange(2,30):
+    a=0.5*A[i-1]+0.5*A[i-2]
+    A=np.append(A,a)
+plt.plot(A,color='red')
+plt.xlabel('n')
+plt.ylabel('P(n)')
+plt.grid()
+plt.show()
+
+
+
+
+
+
+
+
+# This is code from Lab 7 used to calculate numerical solutions to recurrence relations (Equation 1)
+from sympy.abc import m, x, y, n
+M = sp.solve(m**2-0.5*m-0.5,m)
+A=sp.Matrix([[1,1],[M[0],M[1]]])
+b=sp.Matrix([0,1])
+C,=sp.linsolve((A,b), x, y)
+
+def P(k):
+    return sum(C[i]*M[i]**k for i in range(2))
+    
+P(n)
