@@ -1,0 +1,103 @@
+import numpy as np
+import math
+from sympy import isprime      # this is used to check whether a number is prime
+c1='\033[39m'          # black
+c2='\033[34m'          # blue
+c3='\033[37m'          # white/grey
+c4='\033[31m'          # red
+
+
+
+
+
+# This was used to manually create a grid (not feasible for large grids)
+print(c2+'17  '+c1+'16  '+c1+'15  '+c1+'14  '+c2+'13  '+'')          
+print(c1+'18  '+c2+' 5  '+c1+' 4  '+c2+' 3  '+c1+'12  '+'')
+print(c2+'19  '+c1+' 6  '+c1+' 1  '+c2+' 2  '+c1+'11  '+'')
+print(c1+'20  '+c2+' 7  '+c1+' 8  '+c1+' 9  '+c1+'10  '+'')
+print(c1+'21  '+c1+'22  '+c2+'23  '+c1+'24  '+c1+'25  '+'')
+
+
+
+
+
+# This is the grid-generating code
+n = 77            # n must be odd
+a = np.empty(shape=(n,n),dtype=int)          # I start with an empty n x n array
+mid=math.floor((n-1)/2)                      # mid is the position of the centre of the array
+for j in range(mid):
+    m=2*j+3                      
+    for k in range(m):                      
+        a[(mid-j-1)+(m-1)-k,(mid-j-1)+(m-1)]=m**2-4*m+4+k           # This code works by setting the bottom row of the grid, then the left column, top row and right column.
+        a[(mid-j-1)+m-1,(mid-j-1)+k]=m**2-m+1+k                       # It then moves inwards and does the same thing with the 'inner grid' (j times)
+        a[(mid-j-1)+k,(mid-j-1)+0]=m**2-2*m+2+k                        # This repeats until it gets to the centre
+        a[(mid-j-1)+0,(mid-j-1)+(m-1)-k]=m**2-3*m+3+k                  # the specific values are worked out by finding the nearest multiple of n and counting up/downwards
+a[mid,mid]=1                                                   # The centre of the grid is set to 1
+
+
+print(a[46,40])                # This used to find a specific value in the grid. It's very useful for when the grid is large and the numbers aren't being printed
+
+
+
+
+
+# Below are some of the functions I used to 'highlight' specific values in the grid
+# They each have a similar structure: u"\u2588" is a blank square, c1, c3 and c4 are the different colours
+
+def prime(u):
+    if u==1:
+        return c4+u"\u2588"    
+    elif isprime(u)==1:
+        return c1+u"\u2588"
+    else:
+        return c3+u"\u2588"
+
+
+def tri(u):
+    for i in range(1000):
+        if  u==i*(i+1)/2:
+            return c1+u"\u2588"
+    else:
+        return c3+u"\u2588"
+
+
+def mod(u,n):
+    if u==1:
+        return c4+u"\u2588"
+    elif u%n==0:
+        return c1+u"\u2588"
+    else:
+        return c3+u"\u2588"
+
+
+
+
+
+
+# This is the code that prints the grid one value at a time from the ndarray that was created earlier
+
+for i in range(n):
+    for j in range(n):
+        print(prime(a[i,j]), end='')
+    print('')
+
+
+
+
+
+
+# This prints the coloured numbers instead of the symbols and isn't feasible for large grids
+
+for i in range(n):
+    for j in range(n):
+        print(mod(a[i,j],3), end='')
+        print('{num:0{width}}'.format(num=a[i,j], width=4)+' ', end='')
+    print('')
+
+
+
+
+
+
+
+
