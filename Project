@@ -1,0 +1,455 @@
+import math
+import numpy as np
+
+
+
+
+
+
+
+
+# code for emptying glasses in a line
+def maxim(a):                  # This function works out the maximum value in the array (the fullest glass)
+    maxi = 0
+    for i in range(n):
+        if a[i] > a[maxi]:
+            maxi = i
+    i = maxi
+    return i
+
+def emptyline(a,i):              # This function sets the maximum value to zero as well as the highest value adjacent to the maximum value in the line 
+    a[i] = 0                    # (the fullest glass and the next-fullest glass that's adjacent to it)
+    if i == 0:
+        mi = 1
+    elif i == n-1:
+        mi = n-2
+    else:
+        mi = i-1
+        if a[i+1] > a[mi]:
+            mi = i+1
+    a[mi] = 0
+    return(a)
+
+
+
+
+
+
+
+
+
+# a line with every glass filled
+n = 5                # there are 5 glasses in this line
+v = 0.5
+a = np.zeros(n)        # the glasses start empty
+for i in range(n):
+    a[i] = v / n        # each glass is filled evenly
+for k in range(6):      # the number of rounds that are simulated
+    i = maxim(a)
+    a = emptyline(a,i)
+    for j in range(n):
+        if a[j]>0:        # the value of a non-empty glass is used
+            v1 = a[j]
+            break
+    for j in range(n):
+        a[j] = (v+(n-2)*v1)/n       # the recurrence relation for this set-up
+    i = maxim(a)
+    a = emptyline(a,i)
+print(a)
+
+
+
+
+
+
+
+
+# a line with every other glass filled
+n = 5
+m = math.ceil(n/2)
+v = 0.5
+a = np.zeros(n)
+for i in range(m):
+    a[2*i] = v / m
+for k in range(6):
+    i = maxim(a)
+    a = emptyline(a,i)
+    for j in range(m):
+        if a[2*j]>0:
+            v1 = a[2*j]
+            break
+    for j in range(m):
+        a[2*j] = (v+(m-1)*v1)/m
+    i = maxim(a)
+    a = emptyline(a,i)
+print(a)
+
+
+
+
+
+
+
+
+
+# code for emptying glasses in a grid (no diagonals)
+def maxi(a):
+    maxi, maxj = 0, 0
+    for i in range(n):
+        for j in range(n):
+            if a[i,j] > a[maxi,maxj]:
+                maxi, maxj = i, j
+    i, j = maxi, maxj
+    return i, j
+
+
+def emptylattice(a,i,j):          # This empties the most full glass and the next-fullest glass adjecent to it
+    a[i,j] = 0                    
+    if i == 0:
+        if j == 0:
+            mi, mj = 1, 0
+            if a[0,1] > a[mi,mj]:
+                mi, mj = 0, 1
+        elif j == n-1:
+            mi, mj = 1, n-1
+            if a[0,n-2] > a[mi,mj]:
+                mi, mj = 0, n-2
+        else:
+            mi, mj = 0, j-1
+            if a[1,j] > a[mi,mj]:
+                mi, mj = 1, j
+            if a[0,j+1] > a[mi,mj]:
+                mi, mj = 0, j+1
+    elif i == n-1:
+        if j == 0:
+            mi, mj = n-2, 0
+            if a[n-1,1] > a[mi,mj]:
+                mi, mj = n-1, 1
+        elif j == n-1:
+            mi, mj = n-1, n-2
+            if a[n-2,n-1] > a[mi,mj]:
+                mi, mj = n-2,n-1
+        else:
+            mi, mj = n-1, j-1
+            if a[n-2,j] > a[mi,mj]:
+                mi, mj = n-2, j
+            if a[n-1,j+1] > a[mi,mj]:
+                mi, mj = n-1, j+1
+    elif j == 0:
+        mi, mj = i-1, 0
+        if a[i,1] > a[mi,mj]:
+            mi, mj = i, 1
+        if a[i+1,0] > a[mi,mj]:
+            mi, mj = i+1, 0
+    elif j == n-1:
+        mi, mj = i-1, n-1
+        if a[i,n-2] > a[mi,mj]:
+            mi, mj = i, n-2
+        if a[i+1,n-1] > a[mi,mj]:
+            mi, mj = i+1, n-1
+    else:
+        mi, mj = i-1, j
+        if a[i,j+1] > a[mi,mj]:
+            mi, mj = i, j+1
+        if a[i+1,j] > a[mi,mj]:
+            mi, mj = i+1, j
+        if a[i,j-1] > a[mi,mj]:
+            mi, mj = i, j-1
+    a[mi,mj]=0
+    return(a)
+
+
+
+
+
+
+
+
+
+
+n = 3
+v = 0.5
+m = n**2
+a = np.zeros(shape=(n,n),dtype=float)
+
+for i in range(n):
+    for j in range(n):
+        a[i,j] += v / m
+        
+        
+for k in range(32):
+    i, j = maxi(a)
+    a = emptylattice(a, i, j)
+    v1 = a[n-1,n-1]
+    for i in range(n):
+        for j in range(n):
+            a[i,j] = (v+(m-2)*v1)/m
+
+i, j = maxi(a)
+a = emptylattice(a, i, j)
+print(a)
+
+
+
+
+
+
+
+
+
+n = 5
+v = 0.5
+m = math.ceil(n**2/2)
+a = np.zeros(shape=(n,n),dtype=float)
+
+for i in range(math.ceil(n/2)):
+    for j in range(math.ceil(n/2)):
+        a[2*j,2*i] += v / m
+        
+for i in range(math.floor(n/2)):
+    for j in range(math.floor(n/2)):
+        a[2*j+1,2*i+1] += v / m
+        
+for k in range(12):
+    i, j = maxi(a)
+    a = emptylattice(a, i, j)
+    v1 = a[n-1,n-1]
+    for i in range(math.ceil(n/2)):
+        for j in range(math.ceil(n/2)):
+            a[2*j,2*i] = (v+(m-1)*v1)/m
+    for i in range(math.floor(n/2)):
+        for j in range(math.floor(n/2)):
+            a[2*j+1,2*i+1] = (v+(m-1)*v1)/m
+
+i, j = maxi(a)
+a = emptylattice(a, i, j)
+print(a)
+
+
+
+
+
+
+
+
+
+# code for emptying glasses in a grid (diagonals)
+def maxi(a):
+    maxi, maxj = 0, 0
+    for i in range(n):
+        for j in range(n):
+            if a[i,j] > a[maxi,maxj]:
+                maxi, maxj = i, j
+    i, j = maxi, maxj
+    return i, j
+
+
+def emptylattice(a,i,j):        # The code is so lengthy because the corner glasses only have 3 adjacent to it, the side glasses have 5 adjacent to it and the middle glasses have 8 adjacent to it
+    a[i,j] = 0
+    if i == 0:
+        if j == 0:
+            mi, mj = 1, 0
+            if a[1,1] > a[mi,mj]:
+                mi, mj = 1, 1
+            if a[0,1] > a[mi,mj]:
+                mi, mj = 0, 1
+        elif j == n-1:
+            mi, mj = 1, n-1
+            if a[1,n-2] > a[mi,mj]:
+                mi, mj = 1, n-2
+            if a[0,n-2] > a[mi,mj]:
+                mi, mj = 0, n-2
+        else:
+            mi, mj = 0, j-1
+            if a[1,j-1] > a[mi,mj]:
+                mi, mj = 1, j-1
+            if a[1,j] > a[mi,mj]:
+                mi, mj = 1, j
+            if a[1,j+1] > a[mi,mj]:
+                mi, mj = 1, j+1
+            if a[0,j+1] > a[mi,mj]:
+                mi, mj = 0, j+1
+    elif i == n-1:
+        if j == 0:
+            mi, mj = n-2, 0
+            if a[n-2,1] > a[mi,mj]:
+                mi, mj = n-2, 1
+            if a[n-1,1] > a[mi,mj]:
+                mi, mj = n-1, 1
+        elif j == n-1:
+            mi, mj = n-1, n-2
+            if a[n-2,n-2] > a[mi,mj]:
+                mi, mj = n-2, n-2
+            if a[n-2,n-1] > a[mi,mj]:
+                mi, mj = n-2,n-1
+        else:
+            mi, mj = n-1, j-1
+            if a[n-2,j-1] > a[mi,mj]:
+                mi, mj = n-2, j-1
+            if a[n-2,j] > a[mi,mj]:
+                mi, mj = n-2, j
+            if a[n-2,j+1] > a[mi,mj]:
+                mi, mj = n-2, j+1
+            if a[n-1,j+1] > a[mi,mj]:
+                mi, mj = n-1, j+1
+    elif j == 0:
+        mi, mj = i-1, 0
+        if a[i-1,1] > a[mi,mj]:
+            mi, mj = i-1, 1
+        if a[i,1] > a[mi,mj]:
+            mi, mj = i, 1
+        if a[i+1,1] > a[mi,mj]:
+            mi, mj = i+1, 1
+        if a[i+1,0] > a[mi,mj]:
+            mi, mj = i+1, 0
+    elif j == n-1:
+        mi, mj = i-1, n-1
+        if a[i-1,n-2] > a[mi,mj]:
+            mi, mj = i-1, n-2
+        if a[i,n-2] > a[mi,mj]:
+            mi, mj = i, n-2
+        if a[i+1,n-2] > a[mi,mj]:
+            mi, mj = i+1, n-2
+        if a[i+1,n-1] > a[mi,mj]:
+            mi, mj = i+1, n-1
+    else:
+        mi, mj = i-1, j-1
+        if a[i-1,j] > a[mi,mj]:
+            mi, mj = i-1, j
+        if a[i-1,j+1] > a[mi,mj]:
+            mi, mj = i-1, j+1
+        if a[i,j+1] > a[mi,mj]:
+            mi, mj = i, j+1
+        if a[i+1,j+1] > a[mi,mj]:
+            mi, mj = i+1, j+1
+        if a[i+1,j] > a[mi,mj]:
+            mi, mj = i+1, j
+        if a[i+1,j-1] > a[mi,mj]:
+            mi, mj = i+1, j-1
+        if a[i,j-1] > a[mi,mj]:
+            mi, mj = i, j-1
+    a[mi,mj]=0
+    return(a)
+
+
+
+
+
+
+
+
+
+# filling every glass
+n = 4
+v = 0.5
+m = n**2
+a = np.zeros(shape=(n,n),dtype=float)
+
+for i in range(n):
+    for j in range(n):
+        a[i,j] += v / m
+        
+        
+for k in range(10):
+    i, j = maxi(a)
+    a = emptylattice(a, i, j)
+    v1 = a[n-1,n-1]
+    for i in range(n):
+        for j in range(n):
+            a[i,j] = (v+(m-2)*v1)/m
+
+i, j = maxi(a)
+a = emptylattice(a, i, j)
+print(a)
+
+
+
+
+
+
+
+
+
+# filling the glasses in a diagonal grid
+n = 4
+v = 0.5
+m = math.ceil(n**2/2)
+a = np.zeros(shape=(n,n),dtype=float)
+
+for i in range(math.ceil(n/2)):
+    for j in range(math.ceil(n/2)):
+        a[2*j,2*i] += v / m
+        
+for i in range(math.floor(n/2)):
+    for j in range(math.floor(n/2)):
+        a[2*j+1,2*i+1] += v / m
+        
+for k in range(10):
+    i, j = maxi(a)
+    a = emptylattice(a, i, j)
+    v1 = a[n-1,n-1]
+    for i in range(math.ceil(n/2)):
+        for j in range(math.ceil(n/2)):
+            a[2*j,2*i] = (v+(m-2)*v1)/m
+    for i in range(math.floor(n/2)):
+        for j in range(math.floor(n/2)):
+            a[2*j+1,2*i+1] = (v+(m-2)*v1)/m
+
+i, j = maxi(a)
+a = emptylattice(a, i, j)
+print(a)
+
+
+
+
+
+
+
+
+
+n = 5                # filling every other glass in every other line
+v = 0.5
+m = math.ceil(n/2)**2
+a = np.zeros(shape=(n,n),dtype=float)
+
+for i in range(math.ceil(n/2)):
+    for j in range(math.ceil(n/2)):
+        a[2*j,2*i] += v / m
+
+for k in range(20):
+    i, j = maxi(a)
+    a = emptylattice(a, i, j)
+    v1 = a[n-1,n-1]
+    for i in range(math.ceil(n/2)):
+        for j in range(math.ceil(n/2)):
+            a[2*j,2*i] = (v+(m-1)*v1)/m
+i, j = maxi(a)
+a = emptylattice(a, i, j)
+print(a)
+
+
+
+
+
+
+
+
+# The winning startegy but in a 3x3 grid arrangment
+n = 3
+v = 0.5
+m = 3
+a = np.zeros(shape=(n,n),dtype=float)
+
+a[0,0] += v / m
+a[n-1,0] += v / m
+a[n-1,n-1] += v / m
+
+i, j = maxi(a)
+a = emptylattice(a, i, j)
+v1 = a[n-1,n-1]
+a[0,0] = (v + (m-1)*v1) / m
+a[n-1,0] = (v + (m-1)*v1) / m
+a[n-1,n-1] = (v + (m-1)*v1) / m
+i, j = maxi(a)
+a = emptylattice(a, i, j)
+print(a)
